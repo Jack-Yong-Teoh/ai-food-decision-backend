@@ -1,7 +1,12 @@
 from typing import Optional
 from sqlalchemy import BinaryExpression, ColumnOperators, func
 from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.sql.expression import select
 from app.models.databases.orm.user import User
+from app.models.databases.queries.user import LazyloadUserResultModel
+from app.models.databases.queries.base import FilterModel, PaginateModel, SortModel
+from app.queries.base import lazyload_data
 from app.models.exceptions.not_found_exception import NotFoundException
 
 
@@ -101,7 +106,7 @@ def get_user(
     db_user = db.query(User).filter(*criterion).one_or_none()
     if db_user is None and not optional:
         raise NotFoundException(
-            "AVAIATOR_USER_NOT_FOUND",
+            "USER_NOT_FOUND",
             extra={
                 "user_id": user_id,
                 "username": username,
@@ -125,3 +130,37 @@ def save_user(
     db.commit() if auto_commit else db.flush()
     db.refresh(user)
     return user
+
+
+async def lazyload_users(
+    async_db: AsyncSession,
+    filters: list[FilterModel],
+    pagination: PaginateModel,
+    sort: SortModel,
+    search: str = None,
+    included_fields: list[str] = None,
+    excluded_fields: list[str] = None,
+    export: bool = False,
+) -> LazyloadUserResultModel:
+    select_query = select(
+        User.id,
+        User.username,
+        User.first_name,
+        User.last_name,
+        User.is_active,
+        User.is_superuser,
+        User.last_access,
+        User.created_date,
+    ).select_from(User)
+    results = await lazyload_data(
+        async_db=async_db,
+        select_query=select_query,
+        filters=filters,
+        pagination=pagination,
+        sort=sort,
+        search=search,
+        included_fields=included_fields,
+        excluded_fields=excluded_fields,
+        export=export,
+    )
+    return LazyloadUserResultModel(**results.__dict__)

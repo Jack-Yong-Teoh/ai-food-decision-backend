@@ -53,6 +53,29 @@ def create_user(
     return db_user
 
 
+def delete_user(
+    write_db: Session,
+    user_id: int,
+    auto_commit: bool = True,
+) -> None:
+    db_user = get_user(
+        db=write_db,
+        user_id=user_id,
+    )
+
+    write_db.delete(db_user)
+
+    if auto_commit:
+        write_db.commit()
+
+    logger.debug(
+        "User Deleted",
+        extra={
+            "db_user": db_user,
+        },
+    )
+
+
 def update_user(
     write_db: Session,
     read_db: Session,

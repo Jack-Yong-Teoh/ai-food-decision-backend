@@ -22,6 +22,7 @@ from app.models.exceptions import (
 )
 from app.routes import (
     authentication,
+    user,
 )
 
 fastapi_kwargs = (
@@ -65,4 +66,10 @@ app.include_router(
     authentication.router,
     prefix="/authentication",
     tags=["authentication"],
+)
+
+app.include_router(
+    user.router,
+    prefix="/api/user",
+    tags=["users"],
 )

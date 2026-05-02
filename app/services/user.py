@@ -4,6 +4,7 @@ from app.models.databases.orm.wallet import Wallet
 from app.models.exceptions.conflict_exception import ConflictException
 from app.models.exceptions.logic_exception import LogicException
 from app.queries.user import get_user, save_user
+from app.services.wallet import create_wallet as create_wallet_service
 from app.utilities.error_message import conflict_error, incorrect_value
 from app.utilities.logger import logger
 
@@ -50,12 +51,9 @@ def create_user(
 
     # Create wallet for the user
     if create_wallet:
-        from app.services.wallet import create_wallet as create_wallet_service
-
         wallet = Wallet(user_id=db_user.id, balance=0.0)
         create_wallet_service(
             write_db=write_db,
-            read_db=read_db,
             wallet=wallet,
             auto_commit=False,
         )

@@ -1,13 +1,11 @@
 from sqlalchemy.orm import Session
 from app.models.databases.orm.wallet import Wallet
-from app.models.exceptions.not_found_exception import NotFoundException
 from app.queries.wallet import get_wallet, save_wallet
 from app.utilities.logger import logger
 
 
 def create_wallet(
     write_db: Session,
-    read_db: Session,
     wallet: Wallet,
     auto_commit: bool = True,
 ) -> Wallet:

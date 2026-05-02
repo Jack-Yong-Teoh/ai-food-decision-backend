@@ -1,15 +1,15 @@
 from typing import Optional
 from sqlalchemy import BinaryExpression, ColumnOperators, func
-from sqlalchemy.orm import Session
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session, joinedload
 from sqlalchemy.sql.expression import select
+
 from app.models.databases.orm.user import User
-from app.models.databases.queries.user import LazyloadUserResultModel
-from app.models.databases.queries.base import FilterModel, PaginateModel, SortModel
 from app.models.databases.orm.wallet import Wallet
-from app.queries.base import lazyload_data
-from sqlalchemy.orm import joinedload
+from app.models.databases.queries.base import FilterModel, PaginateModel, SortModel
+from app.models.databases.queries.user import LazyloadUserResultModel
 from app.models.exceptions.not_found_exception import NotFoundException
+from app.queries.base import lazyload_data
 
 
 def get_filter_criterion(

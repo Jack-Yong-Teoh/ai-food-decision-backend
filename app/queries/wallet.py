@@ -1,8 +1,8 @@
 from typing import Optional
 from sqlalchemy import BinaryExpression, ColumnOperators
 from sqlalchemy.orm import Session
+
 from app.models.databases.orm.wallet import Wallet
-from app.models.databases.queries.wallet import DetailedWalletResultModel
 from app.models.exceptions.not_found_exception import NotFoundException
 
 

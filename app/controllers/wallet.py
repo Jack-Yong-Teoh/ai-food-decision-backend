@@ -9,7 +9,6 @@ from app.models.response_models.wallet import (
     GetWalletResponseModel,
 )
 from app.models.databases.orm.wallet import Wallet
-from app.models.databases.queries.wallet import DetailedWalletResultModel
 from app.queries.wallet import (
     get_wallet as query_get_wallet,
 )
@@ -44,7 +43,6 @@ def create_wallet(
     payload: CreateWalletRequestModel,
     authorized_user_id: int = Depends(get_authorized_user_id),
     db: Session = Depends(get_db),
-    slave_db: Session = Depends(get_slave_db),
 ) -> CreateWalletResponseModel:
     logger.debug(
         "Payload Received",
@@ -55,7 +53,6 @@ def create_wallet(
     )
     db_wallet = wallet_services.create_wallet(
         write_db=db,
-        read_db=slave_db,
         wallet=Wallet(**payload.model_dump()),
     )
     return db_wallet

@@ -52,7 +52,6 @@ def create_lucky_pick(
     payload: CreateLuckyPickRequestModel,
     authorized_user_id: int = Depends(get_authorized_user_id),
     db: Session = Depends(get_db),
-    slave_db: Session = Depends(get_slave_db),
 ) -> CreateLuckyPickResponseModel:
     logger.debug(
         "Payload Received",
@@ -73,7 +72,6 @@ def update_lucky_pick(
     payload: UpdateLuckyPickRequestModel,
     authorized_user_id: int = Depends(get_authorized_user_id),
     db: Session = Depends(get_db),
-    slave_db: Session = Depends(get_slave_db),
 ) -> UpdateLuckyPickResponseModel:
     logger.debug(
         "Payload Received",

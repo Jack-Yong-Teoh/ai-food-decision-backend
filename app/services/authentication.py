@@ -11,8 +11,10 @@ from app.models.databases.orm.user import User
 from app.models.enums.authentication import JWTTokenScope
 from app.models.exceptions import UnauthorizedException
 from app.models.services.authentication import JWTTokenModel, LoginResult
+from app.queries.wallet import get_wallet
 from app.queries.user import get_user, save_user
 from app.redis import redis as redis_app
+from app.services.user import create_user as create_user_service
 from app.services.redis import (
     handle_login_success,
     handle_logout_success,
@@ -360,9 +362,6 @@ def handle_signup(
     """
     Handle user signup by creating a user, creating a wallet, and logging them in.
     """
-    from app.services.user import create_user as create_user_service
-    from app.models.databases.orm.user import User
-
     # Create the user (which will also create a wallet)
     new_user = User(
         username=username,
@@ -381,8 +380,6 @@ def handle_signup(
     )
 
     # Get the wallet that was created
-    from app.queries.wallet import get_wallet
-
     db_wallet = get_wallet(
         db=write_db,
         user_id=db_user.id,

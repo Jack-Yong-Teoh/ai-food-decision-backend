@@ -61,7 +61,6 @@ def create_wallet(
     return db_wallet
 
 
-
 def delete_wallet(
     wallet_id: int,
     authorized_user_id: int = Depends(get_authorized_user_id),
@@ -100,4 +99,3 @@ def get_wallet_by_user(
     )
 
     return db_wallet
-

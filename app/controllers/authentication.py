@@ -4,11 +4,13 @@ from app.models.request_models.authentication import (
     RefreshTokenRequestModel,
     LoginUserRequestModel,
     ChangePasswordRequestModel,
+    SignUpRequestModel,
 )
 from app.models.response_models.authentication import (
     LoginResponseModel,
     LogoutResponseModel,
     ChangePasswordResponseModel,
+    SignUpResponseModel,
 )
 from app.redis import redis
 from app.services.authentication import (
@@ -17,6 +19,7 @@ from app.services.authentication import (
     get_bearer_token,
     handle_logout,
     handle_refresh_token,
+    handle_signup,
 )
 from app.services.user import update_password
 from app.utilities.logger import logger
@@ -126,3 +129,29 @@ def change_password(
     )
 
     return ChangePasswordResponseModel(id=user_id)
+
+
+def signup(
+    payload: SignUpRequestModel,
+    ip_address: str = Depends(get_ip_address),
+    db: Session = Depends(get_db),
+) -> SignUpResponseModel:
+    logger.debug(
+        "Payload Received",
+        extra={
+            "payload": payload.model_dump(exclude={"password"}),
+            "ip_address": ip_address,
+        },
+    )
+
+    result = handle_signup(
+        write_db=db,
+        redis=redis,
+        ip_address=ip_address,
+        **payload.model_dump(),
+    )
+
+    return SignUpResponseModel(
+        id=result["user_id"],
+        wallet_id=result["wallet_id"],
+    )

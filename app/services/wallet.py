@@ -60,4 +60,3 @@ def delete_wallet(
             "db_wallet": db_wallet,
         },
     )
- 

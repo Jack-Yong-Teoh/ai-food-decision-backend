@@ -6,7 +6,9 @@ from sqlalchemy.sql.expression import select
 from app.models.databases.orm.user import User
 from app.models.databases.queries.user import LazyloadUserResultModel
 from app.models.databases.queries.base import FilterModel, PaginateModel, SortModel
+from app.models.databases.orm.wallet import Wallet
 from app.queries.base import lazyload_data
+from sqlalchemy.orm import joinedload
 from app.models.exceptions.not_found_exception import NotFoundException
 
 
@@ -103,7 +105,9 @@ def get_user(
         is_active=is_active,
         is_superuser=is_superuser,
     )
-    db_user = db.query(User).filter(*criterion).one_or_none()
+    db_user = (
+        db.query(User).options(joinedload(User.wallet)).filter(*criterion).one_or_none()
+    )
     if db_user is None and not optional:
         raise NotFoundException(
             "USER_NOT_FOUND",
@@ -142,16 +146,21 @@ async def lazyload_users(
     excluded_fields: list[str] = None,
     export: bool = False,
 ) -> LazyloadUserResultModel:
-    select_query = select(
-        User.id,
-        User.username,
-        User.first_name,
-        User.last_name,
-        User.is_active,
-        User.is_superuser,
-        User.last_access,
-        User.created_date,
-    ).select_from(User)
+    select_query = (
+        select(
+            User.id,
+            User.username,
+            User.first_name,
+            User.last_name,
+            User.is_active,
+            User.is_superuser,
+            User.last_access,
+            User.created_date,
+            Wallet.id.label("wallet_id"),
+        )
+        .select_from(User)
+        .join(Wallet, User.id == Wallet.user_id, isouter=True)
+    )
     results = await lazyload_data(
         async_db=async_db,
         select_query=select_query,

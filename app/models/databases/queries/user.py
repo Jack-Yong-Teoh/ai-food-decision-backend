@@ -9,6 +9,7 @@ class DetailedUserResultModel(QueryResultModel):
     last_name: str | None = None
     is_active: bool | None = None
     is_superuser: bool | None = None
+    wallet_id: int | None = None
     last_access: datetime | None = None
     created_date: datetime | None = None
     modified_date: datetime | None = None
@@ -21,6 +22,7 @@ class LazyloadUserQueryResultModel(QueryResultModel):
     last_name: str | None = None
     is_active: bool | None = None
     is_superuser: bool | None = None
+    wallet_id: int | None = None
     last_access: datetime | None = None
     created_date: datetime | None = None
 

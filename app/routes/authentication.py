@@ -1,11 +1,22 @@
 from fastapi import APIRouter
 from app.models.routes.api_routes import InterceptorAPIRoute
-from app.controllers.authentication import login, logout, refresh_token, change_password
+from app.controllers.authentication import (
+    login,
+    logout,
+    refresh_token,
+    change_password,
+    signup,
+)
 
 router = APIRouter(route_class=InterceptorAPIRoute)
 router.add_api_route(
     "/login",
     login,
+    methods=["POST"],
+)
+router.add_api_route(
+    "/signup",
+    signup,
     methods=["POST"],
 )
 router.add_api_route(

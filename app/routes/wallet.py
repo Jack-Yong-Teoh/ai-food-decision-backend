@@ -28,4 +28,3 @@ router.add_api_route(
     delete_wallet,
     methods=["DELETE"],
 )
-

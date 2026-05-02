@@ -11,7 +11,6 @@ from app.models.response_models.exceptions.http_exception_handler import (
     RequestValidationErrorHandler,
 )
 from app.utilities.config import CONFIG
-from app.utilities.postgresql import engine
 from app.models.response_templates import exceptions
 from app.models.exceptions import (
     ConflictException,

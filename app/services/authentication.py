@@ -344,3 +344,63 @@ def handle_refresh_token(
         access_token_expires_delta=access_token_expires_delta,
         refresh_token_expires_delta=refresh_token_expires_delta,
     )
+
+
+def handle_signup(
+    write_db: Session,
+    redis: Redis,
+    username: str,
+    password: str,
+    first_name: str,
+    last_name: str,
+    ip_address: str = None,
+    access_token_expires_delta: Optional[timedelta] = None,
+    refresh_token_expires_delta: Optional[timedelta] = None,
+):
+    """
+    Handle user signup by creating a user, creating a wallet, and logging them in.
+    """
+    from app.services.user import create_user as create_user_service
+    from app.models.databases.orm.user import User
+
+    # Create the user (which will also create a wallet)
+    new_user = User(
+        username=username,
+        password=password,
+        first_name=first_name,
+        last_name=last_name,
+        is_active=True,
+        is_superuser=False,
+    )
+
+    db_user = create_user_service(
+        write_db=write_db,
+        read_db=write_db,
+        user=new_user,
+        auto_commit=False,
+    )
+
+    # Get the wallet that was created
+    from app.queries.wallet import get_wallet
+
+    db_wallet = get_wallet(
+        db=write_db,
+        user_id=db_user.id,
+    )
+
+    # Create login session
+    login_result = handle_login_session(
+        write_db=write_db,
+        redis=redis,
+        user=db_user,
+        ip_address=ip_address,
+        access_token_expires_delta=access_token_expires_delta,
+        refresh_token_expires_delta=refresh_token_expires_delta,
+    )
+
+    return {
+        "user_id": db_user.id,
+        "wallet_id": db_wallet.id,
+        "access_token": login_result.access_token,
+        "refresh_token": login_result.refresh_token,
+    }

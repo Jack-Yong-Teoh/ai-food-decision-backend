@@ -9,7 +9,9 @@ def create_lucky_pick(
     lucky_pick: LuckyPick,
     auto_commit: bool = True,
 ) -> LuckyPick:
-    db_lucky_pick = save_lucky_pick(db=write_db, lucky_pick=lucky_pick, auto_commit=False)
+    db_lucky_pick = save_lucky_pick(
+        db=write_db, lucky_pick=lucky_pick, auto_commit=False
+    )
 
     logger.debug(
         "Lucky Pick Created",

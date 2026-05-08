@@ -19,7 +19,7 @@ router.add_api_route(
     methods=["POST"],
 )
 router.add_api_route(
-    "/{wallet_id}",
+    "",
     get_wallet,
     methods=["GET"],
 )

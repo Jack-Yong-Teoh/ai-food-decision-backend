@@ -177,7 +177,7 @@ def update_profile(
         write_db=db,
         read_db=slave_db,
         user_id=user_id,
-        payload=payload.model_dump(),
+        payload=payload.model_dump(exclude_none=True),
     )
     return db_user
 

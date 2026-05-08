@@ -15,6 +15,7 @@ from app.queries.base import lazyload_data
 def get_filter_criterion(
     user_id: int = None,
     username: str = None,
+    email: str = None,
     password: str = None,
     first_name: str = None,
     last_name: str = None,
@@ -28,6 +29,11 @@ def get_filter_criterion(
             None
             if username is None
             else ColumnOperators.__eq__(func.lower(User.username), func.lower(username))
+        ),
+        (
+            None
+            if email is None
+            else ColumnOperators.__eq__(func.lower(User.email), func.lower(email))
         ),
         (None if password is None else ColumnOperators.__eq__(User.password, password)),
         (
@@ -65,6 +71,7 @@ def get_users(
     db: Session,
     user_id: int = None,
     username: str = None,
+    email: str = None,
     password: str = None,
     first_name: str = None,
     last_name: str = None,
@@ -74,6 +81,7 @@ def get_users(
     criterion = get_filter_criterion(
         user_id=user_id,
         username=username,
+        email=email,
         password=password,
         first_name=first_name,
         last_name=last_name,
@@ -89,6 +97,7 @@ def get_user(
     db: Session,
     user_id: int = None,
     username: str = None,
+    email: str = None,
     password: str = None,
     first_name: str = None,
     last_name: str = None,
@@ -99,6 +108,7 @@ def get_user(
     criterion = get_filter_criterion(
         user_id=user_id,
         username=username,
+        email=email,
         password=password,
         first_name=first_name,
         last_name=last_name,
@@ -114,6 +124,7 @@ def get_user(
             extra={
                 "user_id": user_id,
                 "username": username,
+                "email": email,
                 "password": password,
                 "first_name": first_name,
                 "last_name": last_name,
@@ -150,6 +161,7 @@ async def lazyload_users(
         select(
             User.id,
             User.username,
+            User.email,
             User.first_name,
             User.last_name,
             User.is_active,

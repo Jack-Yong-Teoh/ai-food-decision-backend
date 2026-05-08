@@ -8,6 +8,7 @@ class User(Base, AuditModel):
 
     id = Column(Integer, primary_key=True)
     username = Column(String, unique=True, nullable=False)
+    email = Column(String, nullable=False)
     password = Column(String)
     first_name = Column(String)
     last_name = Column(String)

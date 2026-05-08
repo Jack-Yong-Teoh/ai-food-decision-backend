@@ -5,6 +5,7 @@ from app.services.authentication import generate_password_hash
 
 class CreateUserRequestModel(RequestModel):
     username: str
+    email: str
     first_name: str
     last_name: str
     password: constr(min_length=8)  # type: ignore
@@ -18,6 +19,7 @@ class CreateUserRequestModel(RequestModel):
 
 class UpdateUserRequestModel(RequestModel):
     username: str | None = None
+    email: str | None = None
     first_name: str | None = None
     last_name: str | None = None
     is_active: bool | None = None
@@ -25,6 +27,7 @@ class UpdateUserRequestModel(RequestModel):
 
 
 class UpdateProfileRequestModel(RequestModel):
+    email: str | None = None
     first_name: str | None = None
     last_name: str | None = None
 

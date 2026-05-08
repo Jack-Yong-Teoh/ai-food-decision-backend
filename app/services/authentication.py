@@ -352,6 +352,7 @@ def handle_signup(
     write_db: Session,
     redis: Redis,
     username: str,
+    email: str,
     password: str,
     first_name: str,
     last_name: str,
@@ -365,6 +366,7 @@ def handle_signup(
     # Create the user (which will also create a wallet)
     new_user = User(
         username=username,
+        email=email,
         password=password,
         first_name=first_name,
         last_name=last_name,

@@ -5,6 +5,7 @@ from app.models.databases.queries.base import QueryResultModel, LazyLoadResult
 class DetailedUserResultModel(QueryResultModel):
     id: int | None = None
     username: str | None = None
+    email: str | None = None
     first_name: str | None = None
     last_name: str | None = None
     is_active: bool | None = None
@@ -18,6 +19,7 @@ class DetailedUserResultModel(QueryResultModel):
 class LazyloadUserQueryResultModel(QueryResultModel):
     id: int | None = None
     username: str | None = None
+    email: str | None = None
     first_name: str | None = None
     last_name: str | None = None
     is_active: bool | None = None

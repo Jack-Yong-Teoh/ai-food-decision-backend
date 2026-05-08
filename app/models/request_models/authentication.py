@@ -14,6 +14,7 @@ class LoginUserRequestModel(RequestModel):
 
 class SignUpRequestModel(RequestModel):
     username: str
+    email: str
     first_name: str
     last_name: str
     password: constr(min_length=8)  # type: ignore

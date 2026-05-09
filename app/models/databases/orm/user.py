@@ -17,7 +17,12 @@ class User(Base, AuditModel):
     is_superuser = Column(Boolean, default=False, nullable=False)
 
     # Relationships
-    wallet = relationship("Wallet", uselist=False, back_populates="user")
+    wallet = relationship(
+        "Wallet",
+        uselist=False,
+        back_populates="user",
+        cascade="all, delete-orphan",
+    )
 
     @property
     def wallet_id(self) -> int | None:

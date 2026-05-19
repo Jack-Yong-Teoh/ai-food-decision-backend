@@ -1,8 +1,10 @@
 from sqlalchemy.orm import Session
 from app.models.databases.orm.user import User
+from app.models.databases.orm.wallet import Wallet
 from app.models.exceptions.conflict_exception import ConflictException
 from app.models.exceptions.logic_exception import LogicException
 from app.queries.user import get_user, save_user
+from app.services.wallet import create_wallet as create_wallet_service
 from app.utilities.error_message import conflict_error, incorrect_value
 from app.utilities.logger import logger
 
@@ -31,6 +33,7 @@ def create_user(
     read_db: Session,
     user: User,
     auto_commit: bool = True,
+    create_wallet: bool = True,
 ) -> User:
     before_save_validation(
         read_db=read_db,
@@ -46,11 +49,43 @@ def create_user(
         },
     )
 
+    # Create wallet for the user
+    if create_wallet:
+        wallet = Wallet(user_id=db_user.id, balance=0.0)
+        create_wallet_service(
+            write_db=write_db,
+            wallet=wallet,
+            auto_commit=False,
+        )
+
     if auto_commit:
         write_db.commit()
         write_db.refresh(db_user)
 
     return db_user
+
+
+def delete_user(
+    write_db: Session,
+    user_id: int,
+    auto_commit: bool = True,
+) -> None:
+    db_user = get_user(
+        db=write_db,
+        user_id=user_id,
+    )
+
+    write_db.delete(db_user)
+
+    if auto_commit:
+        write_db.commit()
+
+    logger.debug(
+        "User Deleted",
+        extra={
+            "db_user": db_user,
+        },
+    )
 
 
 def update_user(

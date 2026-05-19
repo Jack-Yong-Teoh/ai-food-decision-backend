@@ -6,6 +6,11 @@ class LoginResponseModel(ResponseModel):
     refresh_token: str
 
 
+class SignUpResponseModel(ResponseModel):
+    id: int
+    wallet_id: int
+
+
 class LogoutResponseModel(ResponseModel):
     result: str
 

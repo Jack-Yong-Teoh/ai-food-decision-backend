@@ -1,15 +1,21 @@
 # pylint: disable=invalid-name
 import os
+from pathlib import Path
 from dataclasses import dataclass
 
 
-def load_env_file(filepath):
-    with open(filepath, encoding="utf-8") as f:
+def load_env_file(filepath: str) -> None:
+    env_path = Path(filepath)
+    if not env_path.exists():
+        return
+
+    with env_path.open(encoding="utf-8") as f:
         for line in f:
             line = line.strip()
-            if line and not line.startswith("#"):
+            if line and not line.startswith("#") and "=" in line:
                 key, value = line.split("=", 1)
-                os.environ[key] = value
+                # Keep values already injected by the environment (e.g. Docker/K8s).
+                os.environ.setdefault(key, value)
 
 
 load_env_file(".env")
@@ -47,14 +53,6 @@ class SlaveDBConfig:
 
 
 @dataclass(frozen=True)
-class AWSConfig:
-    BUCKET_NAME: str = os.environ.get("AWS_BUCKET_NAME")
-    REGION_NAME: str = os.environ.get("AWS_REGION_NAME")
-    ACCESS_KEY_ID: str = os.environ.get("AWS_ACCESS_KEY_ID")
-    SECRET_ACCESS_KEY: str = os.environ.get("AWS_SECRET_ACCESS_KEY")
-
-
-@dataclass(frozen=True)
 class OtherConfig:
     APP_ENV: str = os.environ.get("APP_ENV")
     HEADER_PREFIX: str = os.environ.get("HEADER_PREFIX")
@@ -69,7 +67,6 @@ class Config:
     DB: DBConfig = DBConfig()
     REDIS: RedisConfig = RedisConfig()
     SLAVE_DB: SlaveDBConfig = SlaveDBConfig()
-    AWS: AWSConfig = AWSConfig()
     OTHER: OtherConfig = OtherConfig()
 
 

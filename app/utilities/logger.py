@@ -36,11 +36,11 @@ class LogFormatter(jsonlogger.JsonFormatter):
 
 
 logger = logging.getLogger()
-logHandler = logging.StreamHandler(sys.stdout)
+LOG_HANDLER = logging.StreamHandler(sys.stdout)
 formatter = LogFormatter("%(level) %(timestamp) %(message) %(pathname)s %(lineno)d")
-logHandler.setFormatter(formatter)
+LOG_HANDLER.setFormatter(formatter)
 logger.setLevel(logging.DEBUG)
-logger.addHandler(logHandler)
+logger.addHandler(LOG_HANDLER)
 logging.getLogger("pika").propagate = False
 logging.getLogger("boto3").setLevel(logging.ERROR)
 logging.getLogger("botocore").setLevel(logging.ERROR)

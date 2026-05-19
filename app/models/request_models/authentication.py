@@ -12,6 +12,18 @@ class LoginUserRequestModel(RequestModel):
         return generate_password_hash(value)
 
 
+class SignUpRequestModel(RequestModel):
+    username: str
+    email: str
+    first_name: str
+    last_name: str
+    password: constr(min_length=8)  # type: ignore
+
+    @field_validator("password")
+    def validate_password(cls, value):
+        return generate_password_hash(value)
+
+
 class RefreshTokenRequestModel(RequestModel):
     refresh_token: str
 

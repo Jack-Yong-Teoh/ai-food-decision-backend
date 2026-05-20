@@ -24,6 +24,7 @@ from app.routes import (
     user,
     lucky_pick,
     wallet,
+    transaction,
 )
 
 fastapi_kwargs = (
@@ -85,4 +86,10 @@ app.include_router(
     wallet.router,
     prefix="/api/wallet",
     tags=["wallets"],
+)
+
+app.include_router(
+    transaction.router,
+    prefix="/api/transaction",
+    tags=["transactions"],
 )

@@ -115,14 +115,12 @@ def delete_lucky_pick(
 @export_async
 async def lazyload_lucky_picks(
     payload: LazyloadRequestModel,
-    authorized_user_id: int = Depends(get_authorized_user_id),
     async_slave_db: AsyncSession = Depends(get_async_slave_db),
 ) -> LazyloadLuckyPickResultModel:
     logger.debug(
         "Payload Received",
         extra={
             "payload": payload.model_dump(),
-            "authorized_user_id": authorized_user_id,
         },
     )
 

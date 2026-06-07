@@ -28,3 +28,9 @@ class User(Base, AuditModel):
     def wallet_id(self) -> int | None:
         """Get wallet_id from the wallet relationship"""
         return self.wallet.id if self.wallet else None
+
+    food = relationship(
+        "Food",
+        back_populates="user",
+        cascade="all, delete-orphan",
+    )

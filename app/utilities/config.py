@@ -62,11 +62,28 @@ class OtherConfig:
 
 
 @dataclass(frozen=True)
+class OpenAIConfig:
+    API_KEY: str = os.environ.get("OPENAI_API_KEY")
+    BASE_URL: str = os.environ.get("OPENAI_BASE_URL", "https://api.openai.com/v1")
+    MODEL: str = os.environ.get("OPENAI_MODEL")
+    TIMEOUT: str = os.environ.get("OPENAI_TIMEOUT", "30")
+
+
+@dataclass(frozen=True)
+class PixabayConfig:
+    API_KEY: str = os.environ.get("PIXABAY_API_KEY")
+    BASE_URL: str = os.environ.get("PIXABAY_BASE_URL", "https://pixabay.com/api/")
+    TIMEOUT: str = os.environ.get("PIXABAY_TIMEOUT", "30")
+
+
+@dataclass(frozen=True)
 class Config:
     AUTH: AuthConfig = AuthConfig()
     DB: DBConfig = DBConfig()
     REDIS: RedisConfig = RedisConfig()
     SLAVE_DB: SlaveDBConfig = SlaveDBConfig()
+    OPENAI: OpenAIConfig = OpenAIConfig()
+    PIXABAY: PixabayConfig = PixabayConfig()
     OTHER: OtherConfig = OtherConfig()
 
 

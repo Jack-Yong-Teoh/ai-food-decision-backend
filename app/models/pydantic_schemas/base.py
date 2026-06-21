@@ -36,6 +36,7 @@ class LazyloadRequestModel(RequestModel):
             ]
         ],
     )
+    search: str | None = Field(default="")
     pagination: Optional[PaginateModel]
     sort: Optional[SortModel] = Field(default=None)
     included_fields: Optional[list[str]] = Field(

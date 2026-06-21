@@ -11,7 +11,6 @@ from app.models.response_models.exceptions.http_exception_handler import (
     RequestValidationErrorHandler,
 )
 from app.utilities.config import CONFIG
-from app.utilities.postgresql import engine
 from app.models.response_templates import exceptions
 from app.models.exceptions import (
     ConflictException,
@@ -22,6 +21,11 @@ from app.models.exceptions import (
 )
 from app.routes import (
     authentication,
+    user,
+    lucky_pick,
+    wallet,
+    transaction,
+    food,
 )
 
 fastapi_kwargs = (
@@ -63,6 +67,36 @@ app.add_exception_handler(HTTPException, HTTPExceptionHandler.handler)
 
 app.include_router(
     authentication.router,
-    prefix="/authentication",
+    prefix="/api/authentication",
     tags=["authentication"],
+)
+
+app.include_router(
+    user.router,
+    prefix="/api/user",
+    tags=["users"],
+)
+
+app.include_router(
+    lucky_pick.router,
+    prefix="/api/lucky-pick",
+    tags=["lucky-picks"],
+)
+
+app.include_router(
+    wallet.router,
+    prefix="/api/wallet",
+    tags=["wallets"],
+)
+
+app.include_router(
+    transaction.router,
+    prefix="/api/transaction",
+    tags=["transactions"],
+)
+
+app.include_router(
+    food.router,
+    prefix="/api/food",
+    tags=["foods"],
 )

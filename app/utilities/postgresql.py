@@ -10,6 +10,9 @@ from sqlalchemy.ext.asyncio import (
 )
 from app.utilities.config import CONFIG
 
+# Keep conventional SQLAlchemy session factory names (SessionLocal, AsyncSessionLocal, etc.).
+# pylint: disable=invalid-name
+
 # Synchronous - Read + Write
 db_user = CONFIG.DB.USERNAME
 db_pwd = CONFIG.DB.PASSWORD

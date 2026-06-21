@@ -1,13 +1,21 @@
 from typing import Optional
 from sqlalchemy import BinaryExpression, ColumnOperators, func
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session, joinedload
+from sqlalchemy.sql.expression import select
+
 from app.models.databases.orm.user import User
+from app.models.databases.orm.wallet import Wallet
+from app.models.databases.queries.base import FilterModel, PaginateModel, SortModel
+from app.models.databases.queries.user import LazyloadUserResultModel
 from app.models.exceptions.not_found_exception import NotFoundException
+from app.queries.base import lazyload_data
 
 
 def get_filter_criterion(
     user_id: int = None,
     username: str = None,
+    email: str = None,
     password: str = None,
     first_name: str = None,
     last_name: str = None,
@@ -21,6 +29,11 @@ def get_filter_criterion(
             None
             if username is None
             else ColumnOperators.__eq__(func.lower(User.username), func.lower(username))
+        ),
+        (
+            None
+            if email is None
+            else ColumnOperators.__eq__(func.lower(User.email), func.lower(email))
         ),
         (None if password is None else ColumnOperators.__eq__(User.password, password)),
         (
@@ -58,6 +71,7 @@ def get_users(
     db: Session,
     user_id: int = None,
     username: str = None,
+    email: str = None,
     password: str = None,
     first_name: str = None,
     last_name: str = None,
@@ -67,6 +81,7 @@ def get_users(
     criterion = get_filter_criterion(
         user_id=user_id,
         username=username,
+        email=email,
         password=password,
         first_name=first_name,
         last_name=last_name,
@@ -82,6 +97,7 @@ def get_user(
     db: Session,
     user_id: int = None,
     username: str = None,
+    email: str = None,
     password: str = None,
     first_name: str = None,
     last_name: str = None,
@@ -92,19 +108,23 @@ def get_user(
     criterion = get_filter_criterion(
         user_id=user_id,
         username=username,
+        email=email,
         password=password,
         first_name=first_name,
         last_name=last_name,
         is_active=is_active,
         is_superuser=is_superuser,
     )
-    db_user = db.query(User).filter(*criterion).one_or_none()
+    db_user = (
+        db.query(User).options(joinedload(User.wallet)).filter(*criterion).one_or_none()
+    )
     if db_user is None and not optional:
         raise NotFoundException(
-            "AVAIATOR_USER_NOT_FOUND",
+            "USER_NOT_FOUND",
             extra={
                 "user_id": user_id,
                 "username": username,
+                "email": email,
                 "password": password,
                 "first_name": first_name,
                 "last_name": last_name,
@@ -125,3 +145,43 @@ def save_user(
     db.commit() if auto_commit else db.flush()
     db.refresh(user)
     return user
+
+
+async def lazyload_users(
+    async_db: AsyncSession,
+    filters: list[FilterModel],
+    pagination: PaginateModel,
+    sort: SortModel,
+    search: str = None,
+    included_fields: list[str] = None,
+    excluded_fields: list[str] = None,
+    export: bool = False,
+) -> LazyloadUserResultModel:
+    select_query = (
+        select(
+            User.id,
+            User.username,
+            User.email,
+            User.first_name,
+            User.last_name,
+            User.is_active,
+            User.is_superuser,
+            User.last_access,
+            User.created_date,
+            Wallet.id.label("wallet_id"),
+        )
+        .select_from(User)
+        .join(Wallet, User.id == Wallet.user_id, isouter=True)
+    )
+    results = await lazyload_data(
+        async_db=async_db,
+        select_query=select_query,
+        filters=filters,
+        pagination=pagination,
+        sort=sort,
+        search=search,
+        included_fields=included_fields,
+        excluded_fields=excluded_fields,
+        export=export,
+    )
+    return LazyloadUserResultModel(**results.__dict__)
